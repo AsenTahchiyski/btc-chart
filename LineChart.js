@@ -21,7 +21,7 @@ class LineChart {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Initialise a X axis:
-    this.x = d3.scaleUtc().range([0, width]);
+    this.x = d3.scaleTime().range([0, width]);
     this.xAxis = d3.axisBottom().scale(this.x);
     this.svg.append("g")
       .attr("transform", `translate(0, ${height})`)

@@ -1,4 +1,4 @@
-class LineChartUpdatable {
+class LineChart {
   x;
   xAxis;
   y;

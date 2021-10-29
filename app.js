@@ -1,15 +1,16 @@
-// Parse data.json
-async function getRawData() {
-  const json = await fetch('./data.json');
-  const parsed = await json.json();
-  return parsed.XXBTZEUR;
-}
-
 // Transform Kraken to D3 data format
-function transformData(item) {
+function transformDataKraken(item) {
   return {
     x: item[2] * 1000,
     y: parseFloat(item[0])
+  }
+}
+
+// Transform Binance to D3 data format
+function transformDataBinance(item) {
+  return {
+    x: item.time,
+    y: parseFloat(item.price)
   }
 }
 
@@ -55,25 +56,15 @@ async function startWebSocketConnection(onUpdate) {
 
 // Fetch price history
 async function getInitialData() {
-  const url = 'https://api.kraken.com/0/public/Trades?pair=XBTEUR';
-  const corsProxy = 'https://cors.io/?';
-  // const response = await fetch(corsProxy + url,
-  const response = await fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': navigator.userAgent,
-      }
-    });
-
+  const response = await fetch('https://api.binance.com/api/v3/trades?symbol=BTCEUR')
   return await response.json();
 }
 
 // Update chart with new data
-updateChart = data => {
+function updateChart(data) {
   const updateDataSet = [];
   for (const item of data) {
-    updateDataSet.push(this.transformData(item));
+    updateDataSet.push(this.transformDataKraken(item));
   }
 
   this.chartData = [...this.chartData.splice(updateDataSet.length), ...updateDataSet];
@@ -81,15 +72,13 @@ updateChart = data => {
 }
 
 async function main() {
-  const chartDataRaw = await getRawData();
-  // const chartDataRaw = await getInitialData();
-  this.chartData = chartDataRaw.map(item => this.transformData(item));
+  const chartDataRaw = await getInitialData();
+  this.chartData = chartDataRaw.map(item => this.transformDataBinance(item));
 
-  chart.create(chartData);
-
+  chart.create(this.chartData);
   await startWebSocketConnection(this.updateChart)
 }
 
-const chart = new LineChartUpdatable();
+const chart = new LineChart();
 let chartData = [];
 main();

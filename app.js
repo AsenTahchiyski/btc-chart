@@ -57,13 +57,12 @@ async function startWebSocketConnection(onUpdate) {
 async function getInitialData() {
   const url = 'https://api.kraken.com/0/public/Trades?pair=XBTEUR';
   const corsProxy = 'https://cors.io/?';
-  const response = await fetch(corsProxy + url,
-  // const response = await fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
+  // const response = await fetch(corsProxy + url,
+  const response = await fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
     {
       headers: {
-        'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': navigator.userAgent
+        'User-Agent': navigator.userAgent,
       }
     });
 
@@ -82,8 +81,8 @@ updateChart = data => {
 }
 
 async function main() {
-  // const chartDataRaw = await getRawData();
-  const chartDataRaw = await getInitialData();
+  const chartDataRaw = await getRawData();
+  // const chartDataRaw = await getInitialData();
   this.chartData = chartDataRaw.map(item => this.transformData(item));
 
   chart.create(chartData);

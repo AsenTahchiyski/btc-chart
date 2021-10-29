@@ -56,7 +56,7 @@ async function startWebSocketConnection(onUpdate) {
 // Fetch price history
 async function getInitialData() {
   const url = 'https://api.kraken.com/0/public/Trades?pair=XBTEUR';
-  const corsProxy = 'http://cors.io/?';
+  const corsProxy = 'https://cors.io/?';
   const response = await fetch(corsProxy + url,
   // const response = await fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
     {

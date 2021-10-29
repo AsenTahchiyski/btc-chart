@@ -57,10 +57,9 @@ async function startWebSocketConnection(onUpdate) {
 async function getInitialData() {
   const response = await fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
     {
-      mode: 'cors',
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': navigator.userAgent
       }
     });
 
@@ -91,14 +90,3 @@ async function main() {
 const chart = new LineChartUpdatable();
 let chartData = [];
 main();
-
-// fetch('https://api.kraken.com/0/public/Trades?pair=XBTEUR',
-// {
-//   mode: 'cors',
-//   headers: {
-//     'Access-Control-Allow-Origin': '*',
-//     'Content-Type': 'application/json'
-//   }
-// })
-//   .then(res => res.json())
-//   .then(data => console.log(data));

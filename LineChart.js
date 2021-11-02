@@ -4,7 +4,6 @@ class LineChart {
   y;
   yAxis;
   svg;
-  transitionDuration = 0;
 
   create = data => {
     // set the dimensions and margins of the graph
@@ -41,15 +40,12 @@ class LineChart {
   update = data => {
     // Create the X axis:
     this.x.domain([d3.min(data, d => d.x), d3.max(data, d => d.x)]);
-    this.svg.selectAll(".myXaxis").transition()
-      .duration(this.transitionDuration)
+    this.svg.selectAll(".myXaxis")
       .call(this.xAxis);
 
     // create the Y axis
     this.y.domain([d3.min(data, d => d.y), d3.max(data, d => d.y)]);
     this.svg.selectAll(".myYaxis")
-      .transition()
-      .duration(this.transitionDuration)
       .call(this.yAxis);
 
     // Create a update selection: bind to the new data
@@ -60,8 +56,6 @@ class LineChart {
     u
       .join("path")
       .attr("class", "lineTest")
-      .transition()
-      .duration(this.transitionDuration)
       .attr("d", d3.line()
         .x(d => this.x(d.x))
         .y(d => this.y(d.y)))

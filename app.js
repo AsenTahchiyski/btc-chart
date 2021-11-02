@@ -75,7 +75,7 @@ async function main() {
   this.chartData = chartDataRaw.map(item => this.transformDataBinance(item));
 
   chart.create(this.chartData);
-  // await startWebSocketConnection(this.updateChart)
+
   if (typeof(worker) === 'undefined') {
     worker = new Worker('WebSocketWebWorker.js');
   }
@@ -83,7 +83,6 @@ async function main() {
   worker.onmessage = event => {
     this.updateChart(event.data);
   }
-
 }
 
 window.onbeforeunload = () => {
@@ -93,9 +92,3 @@ window.onbeforeunload = () => {
 const chart = new LineChart();
 let chartData = [];
 main();
-
-// document.addEventListener('visibilitychange', () => {
-//   if (!this.socket) {
-//     this.main();
-//   }
-// });

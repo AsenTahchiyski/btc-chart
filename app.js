@@ -14,45 +14,44 @@ function transformDataBinance(item) {
   }
 }
 
-// Set up Kraken web socket
-async function startWebSocketConnection(onUpdate) {
-  const socket = new WebSocket('wss://ws.kraken.com');
+// // Set up Kraken web socket
+// async function startWebSocketConnection(onUpdate) {
+//   const socket = new WebSocket('wss://ws.kraken.com');
 
-  socket.onmessage = msg => {
-    const responseData = JSON.parse(msg.data);
+//   socket.onmessage = msg => {
+//     console.log('socket msg received');
+//     const responseData = JSON.parse(msg.data);
 
-    if (responseData.event === 'heartbeat' ||
-      !Array.isArray(responseData[1])) {
-      return;
-    }
+//     if (responseData.event === 'heartbeat' ||
+//       !Array.isArray(responseData[1])) {
+//       return;
+//     }
 
-    onUpdate(responseData[1]);
-  }
+//     onUpdate(responseData[1]);
+//   }
 
-  const subscribe = socket => {
-    const payload = {
-      event: "subscribe",
-      subscription: {
-        name: "trade"
-      },
-      pair: ["XBT/EUR"]
-    };
+//   const subscribe = socket => {
+//     const payload = {
+//       event: "subscribe",
+//       subscription: { name: "trade" },
+//       pair: ["XBT/EUR"]
+//     };
 
-    socket.send(JSON.stringify(payload));
-  }
+//     socket.send(JSON.stringify(payload));
+//   }
 
-  var interval =
-    setInterval(() => {
-      if (socket.readyState) {
-        subscribe(socket);
-        clearInterval(interval);
-      }
-    }, 500);
+//   var interval =
+//     setInterval(() => {
+//       if (socket.readyState) {
+//         subscribe(socket);
+//         clearInterval(interval);
+//       }
+//     }, 500);
 
-  window.onbeforeunload = () => {
-    socket.close();
-  }
-}
+//   window.onbeforeunload = () => {
+//     socket.close();
+//   }
+// }
 
 // Fetch price history
 async function getInitialData() {
@@ -76,9 +75,27 @@ async function main() {
   this.chartData = chartDataRaw.map(item => this.transformDataBinance(item));
 
   chart.create(this.chartData);
-  await startWebSocketConnection(this.updateChart)
+  // await startWebSocketConnection(this.updateChart)
+  if (typeof(worker) === 'undefined') {
+    worker = new Worker('WebSocketWebWorker.js');
+  }
+
+  worker.onmessage = event => {
+    this.updateChart(event.data);
+  }
+
+}
+
+window.onbeforeunload = () => {
+  worker.postMessage({ status: 'closing'});
 }
 
 const chart = new LineChart();
 let chartData = [];
 main();
+
+// document.addEventListener('visibilitychange', () => {
+//   if (!this.socket) {
+//     this.main();
+//   }
+// });
